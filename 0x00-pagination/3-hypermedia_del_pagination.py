@@ -64,39 +64,27 @@ class Server:
         return data[start:end]
 
     def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
+        """Retrieves info about a page from a given index and with a
+        specified size.
         """
-        Return a dictionary containing hypermedia pagination
-        metadata that is resilient to deletions.
-
-        Args:
-            index (int): The starting index for the pagination.
-            page_size (int): The number of items per page.
-
-        Returns:
-            Dict: A dictionary containing pagination metadata.
-        """
-        assert index is None or isinstance(index, int),
-        assert isinstance(page_size, int) and page_size > 0,
-
-        indexed_dataset = self.indexed_dataset()
-        total_items = len(indexed_dataset)
-
-        if index is None or index >= total_items:
-            raise AssertionError("Index out of range")
-
-        current_index = index
-        data = []
-
-        while len(data) < page_size and current_index < total_items:
-            if current_index in indexed_dataset:
-                data.append(indexed_dataset[current_index])
-            current_index += 1
-
-        next_index = current_index if current_index < total_items else None
-
-        return {
-            "index": index,
-            "data": data,
-            "page_size": len(data),
-            "next_index": next_index
+        data = self.indexed_dataset()
+        assert index is not None and index >= 0 and index <= max(data.keys())
+        page_data = []
+        data_count = 0
+        next_index = None
+        start = index if index else 0
+        for i, item in data.items():
+            if i >= start and data_count < page_size:
+                page_data.append(item)
+                data_count += 1
+                continue
+            if data_count == page_size:
+                next_index = i
+                break
+        page_info = {
+            'index': index,
+            'next_index': next_index,
+            'page_size': len(page_data),
+            'data': page_data,
         }
+        return page_info
