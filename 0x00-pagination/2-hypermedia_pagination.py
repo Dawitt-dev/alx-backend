@@ -11,8 +11,8 @@ from typing import List, Tuple, Dict
 def index_range(page: int, page_size: int) -> Tuple[int, int]:
     """
     Return a tuple containing a start index and an end index corresponding
-    to the range of indexes to return in a list for those particular
-    pagination parameters.
+    to the range of indexes to return in a list for those
+    particular pagination parameters.
 
     Args:
         page (int): The page number (1-indexed).
@@ -21,9 +21,7 @@ def index_range(page: int, page_size: int) -> Tuple[int, int]:
     Returns:
         Tuple[int, int]: A tuple containing the start and end indexes.
     """
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-    return (start_index, end_index)
+    return ((page - 1) * page_size, ((page - 1) * page_size) + page_size)
 
 
 class Server:
@@ -57,16 +55,13 @@ class Server:
             List[List]: A list of lists containing the data for
             the specified page.
         """
-        assert isinstance(page, int) and page > 0,
-        assert isinstance(page_size, int) and page_size > 0,
-
-        start_index, end_index = index_range(page, page_size)
-        dataset = self.dataset()
-
-        if start_index >= len(dataset):
+        assert type(page) == int and type(page_size) == int
+        assert page > 0 and page_size > 0
+        start, end = index_range(page, page_size)
+        data = self.dataset()
+        if start > len(data):
             return []
-
-        return dataset[start_index:end_index]
+        return data[start:end]
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict[str, any]:
         """
