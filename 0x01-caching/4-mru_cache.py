@@ -27,7 +27,7 @@ class MRUCache(BaseCaching):
             return
 
         if key in self.cache_data:
-             del self.cache_data[key]
+            del self.cache_data[key]
         else:
             if len(self.cache_data) > BaseCaching.MAX_ITEMS:
                 mru_key, _ = self.cache_data.popitem(last=True)
