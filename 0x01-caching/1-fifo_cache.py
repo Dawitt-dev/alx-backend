@@ -4,7 +4,7 @@ a class that inherits from BaseCaching and is a caching system
 """
 
 from base_caching import BaseCaching
-from collections import deque
+from collections import OrderedDict
 
 
 class FIFOCache(BaseCaching):
@@ -13,26 +13,19 @@ class FIFOCache(BaseCaching):
     def __init__(self):
         """Initialize the cache system"""
         super().__init__()
-        self.order = deque()
+        self.cache_data = OrderedDict()
 
     def put(self, key, item):
         """Add an item in the cache."""
         if key is None or item is None:
             return
 
-        if key in self.cache_data:
-            self.order.remove(key)
-        else:
-            if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-                oldest_key = self.order.popleft()
-                del self.cache_data[oldest_key]
-                print(f"DISCARD: {oldest_key}")
+        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
+            oldkey, _ = self.cache_data.popitem(last=False)
+            print(f"DISCARD: {oldkey}")
 
         self.cache_data[key] = item
-        self.order.append(key)
 
         def get(self, key):
             """ Get an item by key """
-            if key is None:
-                return None
-            return self.cache_data.get(key)
+            return self.cache_data.get(key, None)
