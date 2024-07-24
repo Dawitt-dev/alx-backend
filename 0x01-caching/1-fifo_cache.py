@@ -22,11 +22,11 @@ class FIFOCache(BaseCaching):
 
         if key in self.cache_data:
             self.order.remove(key)
-
-        if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-            oldest_key = self.order.popleft()
-            del self.cache_data[oldest_key]
-            print(f"DISCARD: {oldest_key}")
+        else:
+            if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+                oldest_key = self.order.popleft()
+                del self.cache_data[oldest_key]
+                print(f"DISCARD: {oldest_key}")
 
         self.cache_data[key] = item
         self.order.append(key)
